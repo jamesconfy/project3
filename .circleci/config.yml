@@ -13,7 +13,7 @@ commands:
           name: Destroy environments
           when: on_fail
           command: |
-            aws cloudformation delete-stack --stack-name $ID --region ${AWS_DEFAULT_REGION}
+            aws cloudformation delete-stack --stack-name <<parameters.ID>> --region ${AWS_DEFAULT_REGION}
 
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
@@ -185,11 +185,9 @@ jobs:
             - ~/project/.circleci/ansible/inventory.txt
       # Here's where you will add some code to rollback on failure
       - destroy-environment:
-          parameters:
-            ID: udapeople-backend-${CIRCLE_WORKFLOW_ID:0:5}
+          ID: udapeople-backend-${CIRCLE_WORKFLOW_ID:0:5}
       - destroy-environment:
-          parameters:
-            ID: udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:5}
+          ID: udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:5}
 
 workflows:
   default:
