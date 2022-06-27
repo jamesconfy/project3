@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "nestjs": "^0.0.1",
+    "typeorm": "^0.3.6",
+    "winston": "^3.8.0",
+    "winston-loggly-bulk": "^3.2.1"
+  }
+}
