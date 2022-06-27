@@ -155,6 +155,11 @@ jobs:
       # Checkout code from git
       - checkout
       - run:
+          name: Install tar utility
+          command: |
+            yum install -y tar gzip
+
+      - run:
           name: Ensure back-end infrastructure exists
           command: |
             aws cloudformation deploy \
@@ -178,7 +183,7 @@ jobs:
             # Your code here
             aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --output text >> ~/project/.circleci/ansible/inventory.txt
+              --output text >> project/.circleci/ansible/inventory.txt
       - persist_to_workspace:
           root: ~/
           paths:
