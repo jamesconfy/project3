@@ -4,7 +4,6 @@
   "description": "This is just a test.",
   "author": "",
   "license": "MIT",
-  "private": "true",
   "scripts": {
     "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\"",
