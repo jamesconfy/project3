@@ -272,7 +272,6 @@ jobs:
       - revert-migrations:
           ID: ${CIRCLE_WORKFLOW_ID:0:8}
 
-
 workflows:
   default:
     jobs:
