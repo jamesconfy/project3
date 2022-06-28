@@ -194,18 +194,52 @@ jobs:
       - destroy-environment:
           ID: udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:10}
 
+  configure-infrastructure:
+    docker:
+      # Docker image here that supports Ansible
+      - image: python:3.7-alpine3.11
+    steps:
+      # Checkout code from git
+      - checkout
+      # Add SSH server to the image
+      - run: 
+          name: Add SSH
+          command: |
+            apk add --update openssh-client git
+      # Add ssh keys with fingerprint
+      - add_ssh_keys:
+          fingerprints: ["e4:31:75:0e:cf:31:37:bc:25:8a:74:c8:14:d0:91:7b"]
+      # attach workspace
+      _ attach_workspace:
+          at:
+            - ~/project
+      - run:
+          name: Install dependencies
+          command: |
+            # Your code here
+            apk add --update ansible
+            # exit 1
+      - run:
+          name: Configure server
+          command: |
+            # Your code here
+            cd .circleci/ansible
+            ansible-playbook configure-server.yml -i inventory.txt
+            # exit 1
+      # Here's where you will add some code to rollback on failure
+
 workflows:
   default:
     jobs:
-      # - build-frontend
-      # - build-backend
-      # - test-frontend:
-      #     requires: [build-frontend]
-      # - test-backend:
-      #     requires: [build-backend]
-      # - scan-frontend:
-      #     requires: [build-frontend]
-      # - scan-backend:
-      #     requires: [build-backend]
+       - build-frontend
+       - build-backend
+       - test-frontend:
+           requires: [build-frontend]
+       - test-backend:
+           requires: [build-backend]
+       - scan-frontend:
+           requires: [build-frontend]
+       - scan-backend:
+           requires: [build-backend]
       - deploy-infrastructure
       
