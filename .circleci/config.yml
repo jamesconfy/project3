@@ -13,7 +13,11 @@ commands:
           name: Destroy environments
           when: on_fail
           command: |
-            aws cloudformation delete-stack --stack-name <<parameters.ID>> --region ${AWS_DEFAULT_REGION}
+            aws cloudformation delete-stack \
+            --stack-name udapeople-backend-<<ID>>
+            aws s3 rm s3://udapeople-<<ID>> --recursive
+            aws cloudformation delete-stack \
+            --stack-name udapeople-frontend-<<ID>>
 
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
@@ -193,9 +197,7 @@ jobs:
             - project/.circleci/ansible/inventory.txt
       # Here's where you will add some code to rollback on failure
       - destroy-environment:
-          ID: udapeople-backend-${CIRCLE_WORKFLOW_ID:0:8}
-      - destroy-environment:
-          ID: udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:8}
+          ID: ${CIRCLE_WORKFLOW_ID:0:8}
 
   configure-infrastructure:
     docker:
@@ -231,9 +233,7 @@ jobs:
             # exit 1
       # Here's where you will add some code to rollback on failure
       - destroy-environment:
-          ID: udapeople-backend-${CIRCLE_WORKFLOW_ID:0:8}
-      - destroy-environment:
-          ID: udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:8}
+          ID: ${CIRCLE_WORKFLOW_ID:0:8}
 
   run-migrations:
     docker:
@@ -250,6 +250,9 @@ jobs:
             # Your code here
             cd backend
             npm install
+            npm audit fix --audit-level=critical --force
+            npm audit fix --force
+            npm audit --audit-level=critical
             npm run migrations > migrations_dump.txt
             # exit 1
       - run:
@@ -261,9 +264,11 @@ jobs:
               # If you are using kvdb.io, generate the bucket ID "NH6obrpTfsArn281rBkSLK" in your local terminal first
               curl https://kvdb.io/NH6obrpTfsArn281rBkSLK/migration_${CIRCLE_WORKFLOW_ID:0:8}  -d '1'
             fi
-            exit 1
+            # exit 1
      # Here's where you will add some code to rollback on failure
       - revert-migrations:
+          ID: ${CIRCLE_WORKFLOW_ID:0:8}
+      - destroy-environment:
           ID: ${CIRCLE_WORKFLOW_ID:0:8}
 
 workflows:
