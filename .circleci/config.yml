@@ -248,10 +248,6 @@ jobs:
     steps:
       # Checkout code from git
       - checkout
-      - run:
-          name: Install AWS
-          command: |
-            npm i aws-cli
       - restore_cache:
           keys: [backend-build]
       - run:
