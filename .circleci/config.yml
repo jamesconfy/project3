@@ -242,6 +242,10 @@ jobs:
     steps:
       # Checkout code from git
       - checkout
+      - run:
+          name: Install AWS
+          command: |
+            npm i aws-cli
       - restore_cache:
           keys: [backend-build]
       - run:
@@ -250,9 +254,7 @@ jobs:
             # Your code here
             cd backend
             npm install
-            npm audit fix --audit-level=critical --force
-            npm audit fix --force
-            npm audit --audit-level=critical
+            npm audit fix
             npm run migrations > migrations_dump.txt
             # exit 1
       - run:
