@@ -7,7 +7,7 @@
 - name: "upgrade packages"
   become: true
   apt:
-    upgrade: true
+    upgrade: yes
 
 
 - name: remove dependencies that are no longer required
@@ -25,7 +25,7 @@
 - name: "install pm2"
   become: true
   npm:
-    name: pm2
+    name: pm2ß
     global: yes
     production: yes
     state: present
