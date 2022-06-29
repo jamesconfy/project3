@@ -1,9 +1,8 @@
 ---
 - name: Extract files into the EC2 instance
-  become: true
   unarchive:
     src: artifact.tar.gz
-    dest: /usr/local/bin
+    dest: ~/
 
 - name: Start the app
   become: true
