@@ -15,7 +15,7 @@ commands:
           command: |
             aws cloudformation delete-stack \
             --stack-name udapeople-backend-<<parameters.ID>>
-            aws s3 rm s3://udapeople-<<parameters.ID>> --recursive
+            aws s3 rm s3://udapeople-s3-<<parameters.ID>> --recursive
             aws cloudformation delete-stack \
             --stack-name udapeople-frontend-<<parameters.ID>>
 
@@ -306,8 +306,56 @@ jobs:
             npm install
             npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:8}".tar.gz dist
-            aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:8} --recursive
+            aws s3 cp dist s3://udapeople-s3-${CIRCLE_WORKFLOW_ID:0:8} --recursive
       # Here's where you will add some code to rollback on failure      
+      - destroy-environment:
+          ID: ${CIRCLE_WORKFLOW_ID:0:8}
+      - revert-migrations:
+          ID: ${CIRCLE_WORKFLOW_ID:0:8}
+
+  deploy-backend:
+    docker:
+      # Docker image here that supports Ansible
+      - image: python:3.7-alpine3.11
+    steps:
+      # Checkout code from git
+      - checkout
+      # Add SSH server to the image
+      - run: 
+          name: Add SSH
+          command: |
+            apk add --update openssh-client git
+      # Add ssh keys with fingerprint
+      - add_ssh_keys:
+          fingerprints: ["e4:31:75:0e:cf:31:37:bc:25:8a:74:c8:14:d0:91:7b"]
+      # attach workspace
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Install Ansible and AWS
+          command: |
+            apk add --update ansible
+            pip install awscli
+      - run:
+          name: Install NPM and NodeJS
+          command: |
+            # your code here
+            apk add --update nodejs npm tar gzip curl
+      - run:
+          name: Deploy backend
+          command: |
+            # your code here
+            cd backend
+            npm i
+            npm run build
+            cd ..
+            # Zip the directory
+            tar -C backend -czvf artifact.tar.gz .
+            cd .circleci/ansible
+            echo "Contents  of the inventory.txt file is -------"
+            cat inventory.txt
+            ansible-playbook -i inventory.txt deploy-backend.yml
+      # Here's where you will add some code to rollback on failure
       - destroy-environment:
           ID: ${CIRCLE_WORKFLOW_ID:0:8}
       - revert-migrations:
@@ -336,4 +384,6 @@ workflows:
       - run-migrations:
           requires: [configure-infrastructure]  
       - deploy-frontend:
+          requires: [run-migrations]
+      - deploy-backend:
           requires: [run-migrations]
