@@ -3,7 +3,8 @@
   become: true
   unarchive:
     src: artifact.tar.gz
-    dest: /tmp
+    dest: /var/usr/bin/
+
 - name: "upgrade packages."
   become: true
   apt:
