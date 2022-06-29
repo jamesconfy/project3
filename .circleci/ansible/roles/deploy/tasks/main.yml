@@ -4,7 +4,6 @@
   unarchive:
     src: artifact.tar.gz
     dest: .
-    remote_src: yes
 
 - name: Start the app
   become: true
