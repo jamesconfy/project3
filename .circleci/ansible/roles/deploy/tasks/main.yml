@@ -8,15 +8,12 @@
 
 - name: Start the app
   become: true
-  apt:
-    npm install
+  command: npm install
 
 - name: Stop default pm2
   become: true
-  apt:
-    pm2 stop default
+  command: pm2 stop default
 
 - name: Start pm2
   become: true
-  apt:
-    pm2 start npm -- start
+  command: pm2 start npm -- start
