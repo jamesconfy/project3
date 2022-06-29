@@ -3,7 +3,7 @@
   become: true
   unarchive:
     src: ~/artifact.tar.gz
-    dest: /var/bin
+    dest: /
 
 - name: Start the app
   become: true
