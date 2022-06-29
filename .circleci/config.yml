@@ -171,7 +171,6 @@ jobs:
           name: Install tar utility
           command: |
             yum install -y tar gzip
-
       - run:
           name: Ensure back-end infrastructure exists
           command: |
@@ -180,7 +179,6 @@ jobs:
               --tags project=uda-people-backend \
               --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:8}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:8}"  
-
       - run:
           name: Ensure front-end infrastructure exist
           command: |
@@ -189,7 +187,6 @@ jobs:
               --tags project=uda-people-frontend \
               --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:8}" \
               --parameter-overrides ID=""${CIRCLE_WORKFLOW_ID:0:8}""  
-              
       - run:
           name: Add back-end ip to ansible inventory
           command: |
@@ -279,6 +276,10 @@ jobs:
     steps:
       # Checkout code from git
       - checkout
+      - run:
+          name: Install tar utility
+          command: |
+            yum install -y tar gzip
       - attach_workspace:
           at: ~/
       - run:
