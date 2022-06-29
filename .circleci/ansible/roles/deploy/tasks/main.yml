@@ -1,17 +1,28 @@
 ---
+- name: Create directiory
+  file:
+    path: ~/backend
+    state: directory
+
 - name: Extract files into the EC2 instance
   unarchive:
     src: artifact.tar.gz
-    dest: ~/
+    dest: ~/backend
 
 - name: Start the app
   become: true
-  shell: npm install
+  shell: |
+    cd backend
+    npm install
 
 - name: Stop default pm2
   become: true
-  shell: pm2 stop default
+  shell: |
+    cd backend
+    pm2 stop default
 
 - name: Start pm2
   become: true
-  shell: pm2 start npm -- start
+  shell: |
+    cd backend
+    pm2 start npm -- start
