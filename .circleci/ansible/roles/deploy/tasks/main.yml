@@ -1,0 +1,22 @@
+---
+- name: Extract files into the EC2 instance
+  become: true
+  unarchive:
+    src: artifact.tar.gz
+    dest: .
+    remote_src: yes
+
+- name: Start the app
+  become: true
+  apt:
+    npm install
+
+- name: Stop default pm2
+  become: true
+  apt:
+    pm2 stop default
+
+- name: Start pm2
+  become: true
+  apt:
+    pm2 start npm -- start
