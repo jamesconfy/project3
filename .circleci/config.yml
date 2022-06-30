@@ -464,9 +464,9 @@ jobs:
             cat inventory
             ansible-playbook -i inventory node-exporter.yml
       - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:8}
+          ID: ${CIRCLE_WORKFLOW_ID:0:8}
       - revert-migrations:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:8}
+          ID: ${CIRCLE_WORKFLOW_ID:0:8}
 
   cleanup:
     docker:
