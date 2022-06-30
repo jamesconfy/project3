@@ -452,7 +452,7 @@ jobs:
       - run:
           name: Install Dependencies
           command: |
-            apk add --update ansible gzip nodejs npm tar
+            apk add --update ansible gzip nodejs npm tar curl
             pip install awscli
       # - restore_cache:
       #     keys: [backend-build]
@@ -463,7 +463,7 @@ jobs:
           command: |
             cd .circleci/ansible
             cat inventory
-            ansible-playbook -i inventory.txt node-exporter.yml
+            ansible-playbook node-exporter.yml -i inventory.txt
       - destroy-environment:
           ID: ${CIRCLE_WORKFLOW_ID:0:8}
       - revert-migrations:
