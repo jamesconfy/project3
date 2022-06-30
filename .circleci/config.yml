@@ -14,10 +14,10 @@ commands:
           when: on_fail
           command: |
             aws cloudformation delete-stack \
-            --stack-name udapeople-backend-<<parameters.ID>>
-            aws s3 rm s3://udapeople-s3-<<parameters.ID>> --recursive
+             --stack-name udapeople-backend-<<parameters.ID>>
+            aws s3 rm s3://udapeople-<<parameters.ID>> --recursive
             aws cloudformation delete-stack \
-            --stack-name udapeople-frontend-<<parameters.ID>>
+             --stack-name udapeople-frontend-<<parameters.ID>>
 
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
@@ -306,7 +306,7 @@ jobs:
             npm install
             npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:8}".tar.gz dist
-            aws s3 cp dist s3://udapeople-s3-${CIRCLE_WORKFLOW_ID:0:8} --recursive
+            aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:8} --recursive
       # Here's where you will add some code to rollback on failure      
       - destroy-environment:
           ID: ${CIRCLE_WORKFLOW_ID:0:8}
@@ -401,15 +401,44 @@ jobs:
       - run:
           name: Frontend smoke test.
           command: |
-              URL="http://udapeople-s3-${CIRCLE_WORKFLOW_ID:0:8}.s3-website-us-east-1.amazonaws.com/#/employees"            
+              URL="http://udapeople-${CIRCLE_WORKFLOW_ID:0:8}.s3-website-us-east-1.amazonaws.com/#/employees"            
               if curl -s ${URL} | grep "Welcome"
               then
-                return 1
+                return 0
               else
                 return 1
               fi
       - destroy-environment:
           ID: ${CIRCLE_WORKFLOW_ID:0:8} 
+      - revert-migrations:
+          ID: ${CIRCLE_WORKFLOW_ID:0:8}
+
+  cloudfront-update:
+    docker:
+      # Docker image here that supports AWS CLI
+      - image: amazon/aws-cli
+    steps:
+      # Checkout code from git
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            # your code here
+            yum install -y tar gzip curl
+            curl -sL https://rpm.nodesource.com/setup_10.x | bash -
+            yum install -y nodejs
+      - run:
+          name: Update cloudfront distribution
+          command: |
+            # your code here
+            aws cloudformation deploy \
+              --template-file .circleci/files/cloudfront.yml \
+              --stack-name InitialStack \
+              --parameter-overrides WorkflowID="udapeople-${CIRCLE_WORKFLOW_ID:0:8}" \
+              --tags project=udapeople
+      # Here's where you will add some code to rollback on failure
+      - destroy-environment:
+          ID: ${CIRCLE_WORKFLOW_ID:0:8}
       - revert-migrations:
           ID: ${CIRCLE_WORKFLOW_ID:0:8}
 
@@ -441,3 +470,5 @@ workflows:
           requires: [run-migrations]
       - smoke-test:
           requires: [deploy-backend, deploy-frontend]
+      - cloudfront-update:
+          requires: [smoke-test]
