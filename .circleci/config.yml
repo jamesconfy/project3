@@ -526,7 +526,7 @@ workflows:
           requires: [deploy-backend, deploy-frontend]
       - cloudfront-update:
           requires: [smoke-test]
-      - prometheus-node-explorer:
+      - prometheus-node-exporter:
           requires: [cloudfront-update]
       - cleanup:
           requires: [cloudfront-update]
