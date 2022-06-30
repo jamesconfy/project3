@@ -7,23 +7,22 @@
 - name: Extract files into the EC2 instance
   unarchive:
     src: artifact.tar.gz
-    # dest: ~/backend
-    dest: ~/
+    dest: ~/backend
 
 - name: Start the app
   become: true
   shell: |
-    # cd backend
+    cd backend
     npm install
 
-- name: Stop default pm2
-  become: true
-  shell: |
-    # cd backend
-    pm2 stop default
+# - name: Stop default pm2
+#   become: true
+#   shell: |
+#     cd backend
+#     pm2 stop default
 
 - name: Start pm2
   become: true
   shell: |
-    # cd backend
+    cd backend
     pm2 start npm -- start
