@@ -458,8 +458,6 @@ jobs:
           command: |
             apk add --update ansible gzip nodejs npm tar curl
             pip install awscli
-      # - restore_cache:
-      #     keys: [backend-build]
       - attach_workspace:
           at: ~/
       - run:
