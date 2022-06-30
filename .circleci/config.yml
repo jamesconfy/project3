@@ -373,7 +373,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: ~/.circleci/ansible/inventory.txt
+          at: ~/
       - run:
           name: Install dependencies
           command: |
@@ -382,6 +382,7 @@ jobs:
       - run:
           name: Backend smoke test.
           command: |
+            cd .circleci/ansible
             export BACKEND_IP=$(
               aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
@@ -400,7 +401,7 @@ jobs:
       - run:
           name: Frontend smoke test.
           command: |
-              URL="http://udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:8}.s3-website-us-east-1.amazonaws.com/#/employees"            
+              URL="http://udapeople-${CIRCLE_WORKFLOW_ID:0:8}.s3-website-us-east-1.amazonaws.com/#/employees"            
               if curl -s ${URL} | grep "Welcome"
               then
                 return 0
