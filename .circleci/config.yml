@@ -533,4 +533,4 @@ workflows:
       - prometheus-node-exporter:
           requires: [cloudfront-update]
       - cleanup:
-          requires: [prometheus-node-exporter]
+          requires: [cloudfront-update]
