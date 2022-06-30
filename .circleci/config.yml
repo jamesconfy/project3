@@ -442,6 +442,32 @@ jobs:
       - revert-migrations:
           ID: ${CIRCLE_WORKFLOW_ID:0:8}
 
+  prometheus-node-exporter:
+    docker:
+      - image: python:3.7-alpine3.11
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints: ["e4:31:75:0e:cf:31:37:bc:25:8a:74:c8:14:d0:91:7b"]
+      - run:
+          name: Install Dependencies
+          command: |
+            apk add --update aws-cli ansible gzip nodejs npm tar
+      # - restore_cache:
+      #     keys: [backend-build]
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Provision Prometheus Node Exporter
+          command: |
+            cd .circleci/ansible
+            cat inventory
+            ansible-playbook -i inventory node-exporter.yml
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:8}
+      - revert-migrations:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:8}
+
   cleanup:
     docker:
       - image: amazon/aws-cli
