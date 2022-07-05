@@ -489,7 +489,7 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
-      - attack_workspace:
+      - attach_workspace:
         at: ~/
       - run:
           name: Get old stack workflow id
