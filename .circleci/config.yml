@@ -171,6 +171,17 @@ jobs:
           name: Install tar utility
           command: |
             yum install -y tar gzip
+      # - run:
+      #     name: Save Old WorkflowID
+      #     command: |
+      #       export OldWorkflowID=$(aws cloudformation \
+      #         list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
+      #         --no-paginate --output text)
+
+      #       aws cloudformation \
+      #         list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
+      #         --no-paginate --output text >> OldWorkflowID.txt
+      #       echo OldWorkflowID: "${OldWorkflowID}"
       - run:
           name: Ensure back-end infrastructure exists
           command: |
@@ -199,6 +210,7 @@ jobs:
           root: ~/
           paths:
             - project/.circleci/ansible/inventory.txt
+            - OldWorkflow.txt
       # Here's where you will add some code to rollback on failure
       - destroy-environment:
           ID: ${CIRCLE_WORKFLOW_ID:0:8}
@@ -491,7 +503,7 @@ jobs:
       - run:
           name: Remove old stacks and files
           command: |
-            if [[ "${CIRCLE_WORKFLOW_ID:0:8}" != "${OldWorkflowID}" ]]
+            if [[ "${CIRCLE_WORKFLOW_ID:0:8}" != "$OldWorkflowID" ]]
             then
               aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
               aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
